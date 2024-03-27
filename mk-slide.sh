@@ -5,6 +5,14 @@
 # 
 # $ find /media/daniele/Maxtor/Scaricati/TV/ -type f | sort | tr $'\n' "\0
 # 
+# Please note that the images must possess the final video resolution. ImageMagick's
+# convert can do the job.
+#
+# e.g.:
+#   This will put converted files in a preexisting "resize-1920x1080" directory
+#
+# $ for f in *jpg; do convert "$f" -resize 1920x1080 -background black -gravity center -extent 1920x1080 "resize-1920x1080/$(basename -- $f)"; done
+#
 INPUT_LIST="media-list.txt"
 INPUT_AUDIO="./audio-ripetuto-presentazione.flac"
 DEFAULT_IMG_DURATION=6
@@ -92,17 +100,14 @@ INPUTLINE="$INPUTLINE\
   -i $INPUT_AUDIO -shortest"
 
 FILTER="-filter_complex \""
-for i in $( seq 0 $LASTINPUTIDX ); do
-  FILTER="$FILTER [$i]scale=$VID_WIDTH:$VID_HEIGTH:force_original_aspect_ratio=decrease,pad=$VID_WIDTH:$VID_HEIGTH:-1:-1[s$i];" 
-done
 
 pic_duration=$DEFAULT_IMG_DURATION
 offset=$( dcCalc "2 k $pic_duration $FADE_DURATION - p" )
 FILTER="$FILTER\
-  [s0][s1]xfade=transition=circleopen:duration=$FADE_DURATION:offset=$offset[f0]; "
+  [0][1]xfade=transition=circleopen:duration=$FADE_DURATION:offset=$offset[f0]; "
 source_a="f0"
 for i in $( seq 2 $((LASTINPUTIDX-1)) ); do
-  source_b="s$i"
+  source_b="$i"
   fade_ab="f"$((i-1))
   offset=$( dcCalc "2 k $pic_duration $FADE_DURATION - $i * p" )
   FILTER="$FILTER\
@@ -110,7 +115,7 @@ for i in $( seq 2 $((LASTINPUTIDX-1)) ); do
   source_a=$fade_ab
 done
 source_a="f"$((LASTINPUTIDX-2))
-source_b="s$LASTINPUTIDX"
+source_b="$LASTINPUTIDX"
 
 
 i=$LASTINPUTIDX
