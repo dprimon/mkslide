@@ -99,7 +99,7 @@ done
 INPUTLINE="$INPUTLINE\
   -loop 1 -t $LAST_PIC_DURATION -framerate $FPS -i \"${INPUTFILES[$LASTINPUTIDX]}\""
 INPUTLINE="$INPUTLINE\
-  -i $INPUT_AUDIO -shortest"
+  -i $INPUT_AUDIO"
 
 FILTER="-filter_complex \""
 
