@@ -75,6 +75,7 @@ log "Path of calculator (dc):"
 log $( which dc )
 log "Path of sed (sed):"
 log  $( which sed )
+log "Input file list: '$INPUTLINE'"
 log "Processing :"
 
 
