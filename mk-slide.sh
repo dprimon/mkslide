@@ -3,7 +3,7 @@
 # INPUT_LIST is generated as null separated filenames.
 # e.g. 
 # 
-# $ find /media/daniele/Maxtor/Scaricati/TV/ -type f | sort | tr $'\n' "\0
+# $ find /path/to/files/ -type f -name '*jpg' | sort | tr $'\n' "\0
 # 
 # Please note that the images must possess the final video resolution. ImageMagick's
 # convert can do the job.
