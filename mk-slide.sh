@@ -13,7 +13,7 @@
 #
 # $ for f in *jpg; do convert "$f" -resize 1920x1080 -background black -gravity center -extent 1920x1080 "resize-1920x1080/$(basename -- $f)"; done
 #
-INPUT_LIST="media-list.txt"
+INPUT_LIST="${INPUT_LIST:-'media-list.txt'}"
 # -an flag to ffmpeg will not render audio
 INPUT_AUDIO="./audio-ripetuto-presentazione.flac"
 DEFAULT_IMG_DURATION=6
@@ -24,7 +24,7 @@ LAST_PIC_DURATION=12
 VID_WIDTH=1920
 VID_HEIGTH=1080
 FPS=25
-OUTPUT_FILE="presentazione-${FPS}fps.mp4"
+OUTPUT_FILE="${OUTPUT_FILE:-presentazione-${FPS}fps.mp4}"
 #OUTPUT_FILE="/home/daniele/Video/$OUTPUT_FILE"
 
 LOG_FILE="mk-slide.log"
