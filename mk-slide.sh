@@ -14,6 +14,7 @@
 # $ for f in *jpg; do convert "$f" -resize 1920x1080 -background black -gravity center -extent 1920x1080 "resize-1920x1080/$(basename -- $f)"; done
 #
 INPUT_LIST="media-list.txt"
+# -an flag to ffmpeg will not render audio
 INPUT_AUDIO="./audio-ripetuto-presentazione.flac"
 DEFAULT_IMG_DURATION=6
 FADE_DURATION=1.5
