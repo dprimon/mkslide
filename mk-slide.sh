@@ -54,17 +54,17 @@ function dcCalc()
 # Accept total number of pics as the only parameter
 function printEstimatedSlideshowDurationFromNumOfPics() 
 {
-  num_of_pics=$1
-  let num_of_pics--; # don't count the last pic as it has its own duration
-  estimated_slideshow_duration_in_secs=$( dcCalc "$DEFAULT_IMG_DURATION $FADE_DURATION - $num_of_pics * $LAST_PIC_DURATION + p" )
-  otime_hours=$( echo "$estimated_slideshow_duration_in_secs / 3600" | bc )
-  otime_min=$( echo "$estimated_slideshow_duration_in_secs / 60" | bc )
-  otime_secs=$( echo "($estimated_slideshow_duration_in_secs / 1) % 60" | bc )
-  msecCalculation="(($estimated_slideshow_duration_in_secs-($estimated_slideshow_duration_in_secs/1))*1000)/1" 
-  otime_msecs=$( echo $msecCalculation | bc ) 
-  #echo $otime_hours $otime_min $otime_secs $otime_msecs  
-  otime=$( printf "%02d:%02d:%02d.%s" $otime_hours $otime_min $otime_secs $otime_msecs )
-  echo "Durata stimata del filmato risultante: $otime ($estimated_slideshow_duration_in_secs secondi)"
+  NUM_OF_PICS=$1
+  let NUM_OF_PICS--; # don't count the last pic as it has its own duration
+  ESTIMATED_SLIDESHOW_DURATION_IN_SECS=$( dcCalc "$DEFAULT_IMG_DURATION $FADE_DURATION - $NUM_OF_PICS * $LAST_PIC_DURATION + p" )
+  OTIME_HOURS=$( echo "$ESTIMATED_SLIDESHOW_DURATION_IN_SECS / 3600" | bc )
+  OTIME_MIN=$( echo "$ESTIMATED_SLIDESHOW_DURATION_IN_SECS / 60" | bc )
+  OTIME_SECS=$( echo "($ESTIMATED_SLIDESHOW_DURATION_IN_SECS / 1) % 60" | bc )
+  MSECCALCULATION="(($ESTIMATED_SLIDESHOW_DURATION_IN_SECS-($ESTIMATED_SLIDESHOW_DURATION_IN_SECS/1))*1000)/1" 
+  OTIME_MSECS=$( echo $MSECCALCULATION | bc ) 
+  #echo $OTIME_HOURS $OTIME_MIN $OTIME_SECS $OTIME_MSECS  
+  OTIME=$( printf "%02d:%02d:%02d.%s" $OTIME_HOURS $OTIME_MIN $OTIME_SECS $OTIME_MSECS )
+  echo "Durata stimata del filmato risultante: $OTIME ($ESTIMATED_SLIDESHOW_DURATION_IN_SECS secondi)"
 }
 
 
@@ -84,9 +84,9 @@ declare -a INPUTFILES
 declare INPUTLINE
 declare FILTER
 
-while IFS= read -d '' -r file
+while IFS= read -d '' -r FILE
 do
-  INPUTFILES+=("$file")
+  INPUTFILES+=("$FILE")
 done < "$INPUT_LIST"
 
 #declare -p INPUTFILES
@@ -104,27 +104,27 @@ INPUTLINE="$INPUTLINE\
 
 FILTER="-filter_complex \""
 
-pic_duration=$DEFAULT_IMG_DURATION
-offset=$( dcCalc "2 k $pic_duration $FADE_DURATION - p" )
+PIC_DURATION=$DEFAULT_IMG_DURATION
+OFFSET=$( dcCalc "2 k $PIC_DURATION $FADE_DURATION - p" )
 FILTER="$FILTER\
-  [0][1]xfade=transition=circleopen:duration=$FADE_DURATION:offset=$offset[f0]; "
-source_a="f0"
+  [0][1]xfade=transition=circleopen:duration=$FADE_DURATION:offset=$OFFSET[f0]; "
+SOURCE_A="f0"
 for i in $( seq 2 $((LASTINPUTIDX-1)) ); do
-  source_b="$i"
-  fade_ab="f"$((i-1))
-  offset=$( dcCalc "2 k $pic_duration $FADE_DURATION - $i * p" )
+  SOURCE_B="$i"
+  FADE_AB="f"$((i-1))
+  OFFSET=$( dcCalc "2 k $PIC_DURATION $FADE_DURATION - $i * p" )
   FILTER="$FILTER\
-  [$source_a][$source_b]xfade=transition=circleopen:duration=$FADE_DURATION:offset=$offset[$fade_ab];"
-  source_a=$fade_ab
+  [$SOURCE_A][$SOURCE_B]xfade=transition=circleopen:duration=$FADE_DURATION:offset=$OFFSET[$FADE_AB];"
+  SOURCE_A=$FADE_AB
 done
-source_a="f"$((LASTINPUTIDX-2))
-source_b="$LASTINPUTIDX"
+SOURCE_A="f"$((LASTINPUTIDX-2))
+SOURCE_B="$LASTINPUTIDX"
 
 
 i=$LASTINPUTIDX
-offset=$( dcCalc "2 k $pic_duration $FADE_DURATION - $i * p" )
+OFFSET=$( dcCalc "2 k $PIC_DURATION $FADE_DURATION - $i * p" )
 FILTER="$FILTER\
-  [$source_a][$source_b]xfade=transition=circleopen:duration=$FADE_DURATION:offset=$offset\""
+  [$SOURCE_A][$SOURCE_B]xfade=transition=circleopen:duration=$FADE_DURATION:offset=$OFFSET\""
 
 AUDIO_IDX=$((LASTINPUTIDX+1))
 # FILTER="$FILTER\
@@ -132,12 +132,12 @@ AUDIO_IDX=$((LASTINPUTIDX+1))
 #   [1:v] [2:v] [3:v] concat=n=3:v=1:a=0 [video]; \
 #     [video] [audio] afade=t=out:st=8:d=3,aresample=44100 [out]" 
 
-first_output_file=$( addSuffix "-aac" )
-#second_output_file=$( addSuffix "-flac" )
+FIRST_OUTPUT_FILE=$( addSuffix "-aac" )
+#SECOND_OUTPUT_FILE=$( addSuffix "-flac" )
 FFMPEG_CMD="ffmpeg $INPUTLINE\
   $FILTER\
-  -c:v libx264 -pix_fmt yuv420p -preset slow -crf 22 -an ${first_output_file} "
-  #-c:v libx264 -pix_fmt yuv420p -preset slow -crf 22 -c:a aac -b:a 256k ${first_output_file} "
+  -c:v libx264 -pix_fmt yuv420p -preset slow -crf 22 -an ${FIRST_OUTPUT_FILE} "
+  #-c:v libx264 -pix_fmt yuv420p -preset slow -crf 22 -c:a aac -b:a 256k ${FIRST_OUTPUT_FILE} "
   #-c:v libx264 -pix_fmt yuv420p -preset slow -crf 22 -c:a copy $OUTPUT_FILE"
 
 log "$( printEstimatedSlideshowDurationFromNumOfPics "$((LASTINPUTIDX+1))" )"
@@ -147,8 +147,8 @@ log "$FFMPEG_CMD"
 eval "time nice -n 10 $FFMPEG_CMD"
 ERR=$?
 if [ $ERR -eq 0 ]; then 
-  log "$first_output_file pronto."
-  open "$first_output_file"; 
+  log "$FIRST_OUTPUT_FILE pronto."
+  open "$FIRST_OUTPUT_FILE"; 
 else 
   log "Qualcosa è andato storto (errore $ERR)."
 fi
