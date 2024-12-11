@@ -14,8 +14,8 @@
 # $ for f in *jpg; do convert "$f" -resize 1920x1080 -background black -gravity center -extent 1920x1080 "resize-1920x1080/$(basename -- $f)"; done
 #
 INPUT_LIST="${INPUT_LIST:-'media-list.txt'}"
-# -an flag to ffmpeg will not render audio
-INPUT_AUDIO="./audio-ripetuto-presentazione.flac"
+# check for -an flag to ffmpeg: it will not render audio
+INPUT_AUDIO="./repeating-audio-presentation.flac"
 DEFAULT_IMG_DURATION=6
 FADE_DURATION=1.5
 LAST_PIC_DURATION=12
@@ -25,7 +25,7 @@ LAST_PIC_DURATION=12
 VID_WIDTH=1920
 VID_HEIGTH=1080
 FPS=25
-OUTPUT_FILE="${OUTPUT_FILE:-presentazione-${FPS}fps.mp4}"
+OUTPUT_FILE="${OUTPUT_FILE:-presentation-${FPS}fps.mp4}"
 #OUTPUT_FILE="/home/daniele/Video/$OUTPUT_FILE"
 
 LOG_FILE="mk-slide.log"
@@ -64,7 +64,7 @@ function printEstimatedSlideshowDurationFromNumOfPics()
   OTIME_MSECS=$( echo $MSECCALCULATION | bc ) 
   #echo $OTIME_HOURS $OTIME_MIN $OTIME_SECS $OTIME_MSECS  
   OTIME=$( printf "%02d:%02d:%02d.%s" $OTIME_HOURS $OTIME_MIN $OTIME_SECS $OTIME_MSECS )
-  echo "Durata stimata del filmato risultante: $OTIME ($ESTIMATED_SLIDESHOW_DURATION_IN_SECS secondi)"
+  echo "Resulting video projected duration: $OTIME ($ESTIMATED_SLIDESHOW_DURATION_IN_SECS secondi)"
 }
 
 
@@ -147,10 +147,10 @@ log "$FFMPEG_CMD"
 eval "time nice -n 10 $FFMPEG_CMD"
 ERR=$?
 if [ $ERR -eq 0 ]; then 
-  log "$FIRST_OUTPUT_FILE pronto."
+  log "$FIRST_OUTPUT_FILE ready."
   open "$FIRST_OUTPUT_FILE"; 
 else 
-  log "Qualcosa è andato storto (errore $ERR)."
+  log "Something went wrong (error $ERR)."
 fi
 
 #template
